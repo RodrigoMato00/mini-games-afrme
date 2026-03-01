@@ -20,28 +20,13 @@ const TEXTURE_URLS = {
   water: '#tex-water',
 };
 
-/** Base URL absoluta para assets: en GitHub Pages evita que las texturas del FBX fallen */
-function getAssetBase() {
-  if (typeof window === 'undefined') return './';
-  if (window.__assetBase) return window.__assetBase;
-  const h = window.location.hostname;
-  if (h === 'github.io' || h.endsWith('.github.io')) {
-    const path = window.location.pathname;
-    const parts = path.split('/').filter(Boolean);
-    if (parts.length >= 1) {
-      const repoPath = '/' + parts[0] + '/';
-      return window.location.origin + repoPath;
-    }
-  }
-  return './';
-}
-
+/** Rutas relativas a assets. En GitHub Pages <base href> se inyecta en el HTML y el navegador resuelve todo. */
 const ASSET_PATHS = {
   coinModel: '#coinModel',
-  get goombaTexture() { return getAssetBase() + 'assets/textures/goomba/mi_body_alb.png'; },
-  get goombaModel() { return getAssetBase() + 'assets/models/goomba.fbx'; },
-  get castleModel() { return getAssetBase() + 'assets/models/castle.fbx'; },
-  get pipeModel() { return getAssetBase() + 'assets/models/pipe.fbx'; },
+  goombaTexture: 'assets/textures/goomba/mi_body_alb.png',
+  goombaModel: 'assets/models/goomba.fbx',
+  castleModel: 'assets/models/castle.fbx',
+  pipeModel: 'assets/models/pipe.fbx',
 };
 
 function createBox(parent, id, x, y, z, w, h, d, color, usePhysics = true, extraClass = '', textureKey = '') {
@@ -139,8 +124,7 @@ function createEnemy(parent, id, x, y, z, range = 2) {
   root.setAttribute('enemy-movement', `range: ${range}; axis: x`);
 
   const model = document.createElement('a-entity');
-  const base = getAssetBase();
-  model.setAttribute('fbx-model', `src: ${ASSET_PATHS.goombaModel}; scale: 0.5 0.5 0.5; rotation: 0 0 0; resourcePath: ${base}assets/textures/goomba/`);
+  model.setAttribute('fbx-model', `src: ${ASSET_PATHS.goombaModel}; scale: 0.5 0.5 0.5; rotation: 0 0 0; resourcePath: assets/textures/goomba/`);
   model.setAttribute('shadow', 'cast: true');
   root.appendChild(model);
 
