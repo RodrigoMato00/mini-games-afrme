@@ -28,6 +28,19 @@ export function registerFbxModel() {
 
     init() {
       this.model = null;
+      this.mixer = null;
+      this._boundTick = this._tick.bind(this);
+    },
+
+    _tick() {
+      if (this.mixer && this.el.sceneEl) {
+        const dt = this.el.sceneEl.timeDelta;
+        if (dt > 0) this.mixer.update(dt / 1000);
+      }
+    },
+
+    tick(time, delta) {
+      this._tick();
     },
 
     async update() {
@@ -63,6 +76,22 @@ export function registerFbxModel() {
               });
             }
           });
+          const THREE = window.AFRAME?.THREE;
+          const clips = (model.animations || []).length ? model.animations : (model.children[0]?.animations || []);
+          const isGoomba = src.indexOf('goomba') !== -1;
+          if (isGoomba && clips.length === 0) {
+            // FBX sin clips: animación procedural de “caminar” (rebote vertical)
+            this.el.setAttribute('animation', 'property: position; from: 0 0 0; to: 0 0.06 0; dir: alternate; dur: 120; loop: true; easing: linear');
+          }
+          if (THREE && clips.length > 0) {
+            this.mixer = new THREE.AnimationMixer(model);
+            const walkClip = clips.find((c) => /walk|Walk|run|Run|idle|Idle|caminar/i.test(c.name)) || clips[0];
+            const action = this.mixer.clipAction(walkClip);
+            action.setLoop(THREE.LoopRepeat);
+            action.clampWhenFinished = false;
+            action.play();
+            this.el.sceneEl.addEventListener('tick', this._boundTick);
+          }
           this.el.setObject3D('mesh', model);
           this.el.emit('model-loaded', { format: 'fbx', model });
         },
@@ -72,6 +101,10 @@ export function registerFbxModel() {
     },
 
     remove() {
+      if (this.el.sceneEl && this._boundTick) {
+        this.el.sceneEl.removeEventListener('tick', this._boundTick);
+      }
+      this.mixer = null;
       if (this.model) {
         this.el.removeObject3D('mesh');
         this.model = null;
