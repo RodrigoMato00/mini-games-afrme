@@ -55,6 +55,25 @@ function isExitZone(col, row) {
   return col >= 11 && col <= 18 && row <= 1;
 }
 
+/** Celdas alcanzables desde (startRow, startCol) sin atravesar paredes. */
+function getReachableCells(grid, startRow, startCol) {
+  const reachable = new Set();
+  const queue = [[startRow, startCol]];
+  reachable.add(`${startRow},${startCol}`);
+  while (queue.length) {
+    const [r, c] = queue.shift();
+    for (const [dr, dc] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) {
+      const r2 = r + dr, c2 = c + dc;
+      if (r2 < 0 || r2 >= ROWS || c2 < 0 || c2 >= COLS) continue;
+      if (reachable.has(`${r2},${c2}`)) continue;
+      if (grid[r2][c2] === 0) continue;
+      reachable.add(`${r2},${c2}`);
+      queue.push([r2, c2]);
+    }
+  }
+  return reachable;
+}
+
 function createWall(parent, id, x, y, z, usePhysics) {
   const el = document.createElement('a-box');
   el.setAttribute('id', id);
@@ -101,8 +120,31 @@ export function createLevel2(scene, usePhysics = true) {
   const container = document.createElement('a-entity');
   container.setAttribute('id', 'level');
 
-  let startPosition = null;
-  const coinPositions = [];
+  const mapGrid = MAZE_GRID.map((line) => Array(COLS).fill(0).map((_, c) => (line[c] === '#' ? 0 : 1)));
+  let startRow = ROWS - 1, startCol = 1;
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      if ((MAZE_GRID[r] || '')[c] === 'S') { startRow = r; startCol = c; break; }
+    }
+  }
+  const reachable = getReachableCells(mapGrid, startRow, startCol);
+  const reachableCoinsPool = [];
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const key = `${r},${c}`;
+      if (!reachable.has(key)) continue;
+      if (r === startRow && c === startCol) continue;
+      if (isExitZone(c, r)) continue;
+      reachableCoinsPool.push([r, c]);
+    }
+  }
+  for (let i = reachableCoinsPool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [reachableCoinsPool[i], reachableCoinsPool[j]] = [reachableCoinsPool[j], reachableCoinsPool[i]];
+  }
+  const mazeCoinCells = reachableCoinsPool.slice(0, 9);
+  const coinPositions = mazeCoinCells.map(([r, c]) => [worldX(c), 1.2, worldZ(r)]);
+  let startPosition = `${worldX(startCol)} 0.8 ${worldZ(startRow)}`;
   const enemyPositions = [];
 
   for (let row = 0; row < ROWS; row++) {
@@ -116,8 +158,6 @@ export function createLevel2(scene, usePhysics = true) {
       if (ch === '#') {
         createWall(container, `wall-${row}-${col}`, x, WALL_H / 2, z, usePhysics);
       } else {
-        if (ch === 'S') startPosition = `${x} 0.8 ${z}`;
-        if (ch === 'C') coinPositions.push([x, 1.2, z]);
         if (ch === 'G') enemyPositions.push([x, 0, z]);
         if (!isExitZone(col, row)) {
           createCeilingTile(container, `ceiling-${row}-${col}`, x, z, usePhysics);
@@ -126,24 +166,12 @@ export function createLevel2(scene, usePhysics = true) {
     }
   }
 
-  if (!startPosition) startPosition = `${OFFSET_X + CELL} 0.8 ${OFFSET_Z + CELL}`;
-
-  const startParts = startPosition.split(' ').map(Number);
-  const startX = startParts[0];
-  const startZ = startParts[2];
-  // Objeto truco (comentado para que no aparezca)
-  // const trickEl = document.createElement('a-entity');
-  // trickEl.setAttribute('id', 'trick-cheat');
-  // trickEl.setAttribute('class', 'trick-cheat');
-  // trickEl.setAttribute('position', `${startX} 0.6 ${startZ - 1.5}`);
-  // trickEl.setAttribute('geometry', 'primitive: cylinder; radius: 0.5; height: 0.8');
-  // trickEl.setAttribute('material', 'color: #FFD700; metalness: 0.3; roughness: 0.7');
-  // trickEl.setAttribute('shadow', 'cast: true; receive: true');
-  // container.appendChild(trickEl);
-
   coinPositions.forEach(([x, y, z], i) => {
     createCoin(container, `coin-${i}`, x, y, z, usePhysics);
   });
+
+  const startX = worldX(startCol);
+  const startZ = worldZ(startRow);
 
   const ENEMY_FLOOR_Y = 0.3;
   enemyPositions.forEach(([x, _, z], i) => {
@@ -187,6 +215,9 @@ export function createLevel2(scene, usePhysics = true) {
     zMin: OFFSET_Z - CELL,
     zMax: -OFFSET_Z + CELL,
   };
+  // Datos para minimapa que se revela al explorar (grid: 0 = pared, 1 = pasillo)
+  window.__levelMapData = { grid: mapGrid, rows: ROWS, cols: COLS, cell: CELL, offsetX: OFFSET_X, offsetZ: OFFSET_Z };
+  window.__levelMapVisited = Array(ROWS).fill(null).map(() => Array(COLS).fill(0));
   window.__level2Start = { x: startX, z: startZ };
   window.__level2Exit = { x: exitX, z: exitZ };
   window.__level2Cheat = function (levelEl) {

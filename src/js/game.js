@@ -6,7 +6,7 @@ import { createPlayer } from './player.js';
 import { createLevel } from './level.js';
 import { registerPlayerController, registerPlayerControllerSimple } from './player-controller.js';
 import { registerCollectables } from './collectables.js';
-import { createGameState, getGameState, onCoinCollect, onPlayerKilled, onEnemyStomp, stopTimer, TIME_INITIAL } from './game-state.js';
+import { createGameState, getGameState, onCoinCollect, onPlayerKilled, onEnemyStomp, onExitReached, stopTimer, checkMapExplorationWin, TIME_INITIAL } from './game-state.js';
 import { initUI, updateUI, hideMessage } from './ui.js';
 import { playBgMusic, restartBgMusic, playJump, playGameOver } from './sounds.js';
 import './enemy-movement.js';
@@ -39,7 +39,18 @@ export class Game {
     window.__onCoinCollect = onCoinCollect;
     window.__onPlayerKilled = onPlayerKilled;
     window.__onEnemyStomp = onEnemyStomp;
+    window.__onExitReached = onExitReached;
+    window.__checkMapExplorationWin = checkMapExplorationWin;
     window.__onScoreUpdate = () => updateUI();
+    window.__dismissVictoryAndContinue = () => {
+      const g = getGameState();
+      if (g && g.won) {
+        g.won = false;
+        g.gameOver = false;
+        hideMessage();
+        updateUI();
+      }
+    };
     window.__onGameEnd = () => {
       stopTimer();
       updateUI();
@@ -85,7 +96,7 @@ export class Game {
       if (key === 'Enter' && g.won) {
         e.preventDefault();
         const level = window.__currentLevel || 1;
-        const nextHref = level === 1 ? 'nivel2.html' : level === 2 ? 'nivel3.html' : level === 3 ? 'nivel4.html' : 'index.html';
+        const nextHref = level === 1 ? 'nivel2.html' : level === 2 ? 'nivel3.html' : level === 3 ? 'nivel4.html' : level === 4 ? 'nivel5.html' : level === 5 ? 'nivel6.html' : 'index.html';
         window.location.href = nextHref;
       }
     };

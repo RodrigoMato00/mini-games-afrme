@@ -12,7 +12,6 @@ export function createPlayer(sceneEl, usePhysics = true) {
   const camera = document.createElement('a-entity');
   camera.setAttribute('camera', 'active: true; fov: 75; near: 0.1; far: 1000');
   camera.setAttribute('look-controls', 'pointerLockEnabled: true');
-  camera.setAttribute('cursor', 'fuse: false; rayOrigin: mouse');
   camera.setAttribute('raycaster', 'objects: .interactable');
   player.appendChild(camera);
 

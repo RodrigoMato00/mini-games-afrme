@@ -332,9 +332,29 @@ export function registerPlayerControllerSimple() {
       }
       const bounds = (window.__currentLevel === 2 && window.__level2MapBounds)
         ? window.__level2MapBounds
-        : MAP_BOUNDS;
+        : (window.__currentLevel === 6 && window.__level6MapBounds)
+          ? window.__level6MapBounds
+          : MAP_BOUNDS;
       pos.x = Math.max(bounds.xMin, Math.min(bounds.xMax, pos.x));
       pos.z = Math.max(bounds.zMin, Math.min(bounds.zMax, pos.z));
+
+      const mapData = window.__levelMapData;
+      const visited = window.__levelMapVisited;
+      if (mapData && visited) {
+        const { cell, offsetX, offsetZ, rows, cols } = mapData;
+        const col = Math.floor((pos.x - offsetX) / cell + 0.5);
+        const row = Math.floor((pos.z - offsetZ) / cell + 0.5);
+        if (row >= 0 && row < rows && col >= 0 && col < cols) {
+          visited[row][col] = 1;
+          window.__playerMapCell = { row, col };
+          if (typeof window.__updateMinimap === 'function') window.__updateMinimap();
+          if (!window.__levelExitZone && typeof window.__checkMapExplorationWin === 'function') window.__checkMapExplorationWin();
+          const exitZone = window.__levelExitZone;
+          if (typeof exitZone === 'function' && exitZone(row, col) && mapData.grid[row][col] === 1) {
+            if (typeof window.__onExitReached === 'function') window.__onExitReached();
+          }
+        }
+      }
 
       this.vy += GRAVITY;
       pos.y += this.vy;
@@ -366,6 +386,7 @@ export function registerPlayerControllerSimple() {
             this.vy = 0;
             this.grounded = true;
             landed = true;
+            window.__lastLanding = 'platform';
           }
         });
       }
@@ -374,6 +395,14 @@ export function registerPlayerControllerSimple() {
         this.vy = 0;
         this.grounded = true;
         landed = true;
+        window.__lastLanding = 'ground';
+      }
+      if (window.__currentLevel === 5 && this.grounded && window.__lastLanding === 'ground') {
+        if (window.__level5GroundCountdown == null) window.__level5GroundCountdown = 5;
+        window.__level5GroundCountdown -= dt;
+        if (window.__level5GroundCountdown <= 0 && window.__onPlayerKilled) window.__onPlayerKilled();
+      } else if (window.__currentLevel === 5) {
+        window.__level5GroundCountdown = null;
       }
       if (this.keys.space && this.grounded) {
         this.vy = JUMP_VY;
@@ -390,9 +419,6 @@ export function registerPlayerControllerSimple() {
           const c = getWorldPosition(coin);
           const dx = pos.x - c.x, dz = pos.z - c.z;
           if (dx * dx + dz * dz < COIN_COLLECT_DIST * COIN_COLLECT_DIST) {
-            if (window.__currentLevel === 2) {
-              console.log('[Coin collected] id:', coin.id || '(no id)', 'position: x=', c.x.toFixed(2), 'y=', c.y.toFixed(2), 'z=', c.z.toFixed(2));
-            }
             coin.parentNode?.removeChild(coin);
             if (window.__onCoinCollect) window.__onCoinCollect();
           }
