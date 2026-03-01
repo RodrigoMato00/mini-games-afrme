@@ -212,7 +212,7 @@ export function updateUI() {
       ? ' (R or Space = restart level, Enter = next level)'
       : ' (R or Space to try again)';
     const level = window.__currentLevel || 1;
-    const nextHrefByLevel = level === 1 ? 'nivel2.html' : level === 2 ? 'nivel3.html' : level === 3 ? 'nivel4.html' : level === 4 ? 'nivel5.html' : level === 5 ? 'nivel6.html' : null;
+    const nextHrefByLevel = level === 1 ? 'nivel2.html' : level === 2 ? 'nivel3.html' : level === 3 ? 'nivel4.html' : level === 4 ? 'nivel5.html' : level === 5 ? 'nivel6.html' : level === 6 ? 'nivel7.html' : null;
     msgEl.innerHTML = '';
     const textEl = document.createElement('span');
     textEl.className = 'game-over-text';
@@ -289,6 +289,9 @@ export function initUI(totalCoins) {
   }
   if (inst && window.__currentLevel === 6) {
     inst.textContent = 'WASD move · Space jump · M = big map · Reach the exit to win. Collect all coins for bonus points. Avoid enemies!';
+  }
+  if (inst && window.__currentLevel === 7) {
+    inst.textContent = 'WASD move · Space jump · Winter! Collect all 10 coins. Avoid goombas or stomp them!';
   }
   window.__updateMinimap = updateMinimap;
   updateUI();

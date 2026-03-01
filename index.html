@@ -27,8 +27,11 @@
       letter-spacing: 0.02em;
     }
     .start-btn:hover { transform: scale(1.05); box-shadow: 0 6px 16px rgba(0,0,0,0.4); }
-    .start-btn-primary { background: linear-gradient(180deg, #E52521, #B91E1A); color: #fff; }
-    .start-btn-level { background: linear-gradient(180deg, #F1C40F, #D4AC0D); color: #1a1a1a; text-shadow: 1px 1px 0 #fff, -1px -1px 0 rgba(0,0,0,0.3); }
+    /* Colores del logo Mario: rojo, azul, verde, amarillo */
+    .start-btn-red { background: linear-gradient(180deg, #E52521, #B91E1A); color: #fff; text-shadow: 2px 2px 0 #000, -1px -1px 0 #000; }
+    .start-btn-blue { background: linear-gradient(180deg, #1E90FF, #1565C0); color: #fff; text-shadow: 2px 2px 0 #000, -1px -1px 0 #000; }
+    .start-btn-green { background: linear-gradient(180deg, #2E7D32, #1B5E20); color: #fff; text-shadow: 2px 2px 0 #000, -1px -1px 0 #000; }
+    .start-btn-yellow { background: linear-gradient(180deg, #F1C40F, #D4AC0D); color: #1a1a1a; text-shadow: 1px 1px 0 #fff, -1px -1px 0 rgba(0,0,0,0.3); }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/aframe/1.7.0/aframe.min.js"></script>
 </head>
@@ -76,12 +79,13 @@
 
   <div id="start-overlay">
     <div class="start-buttons">
-      <a href="nivel1.html" class="start-btn start-btn-primary">Level 1 (Overworld)</a>
-      <a href="nivel2.html" class="start-btn start-btn-level">Level 2 (Maze)</a>
-      <a href="nivel3.html" class="start-btn start-btn-level">Level 3 (Lava)</a>
-      <a href="nivel4.html" class="start-btn start-btn-level">Level 4 (Clouds)</a>
-      <a href="nivel5.html" class="start-btn start-btn-level">Level 5 (Pipe Land)</a>
-      <a href="nivel6.html" class="start-btn start-btn-level">Level 6 (Random Maze)</a>
+      <a href="nivel1.html" class="start-btn start-btn-red">Level 1 (Overworld)</a>
+      <a href="nivel2.html" class="start-btn start-btn-blue">Level 2 (Maze)</a>
+      <a href="nivel3.html" class="start-btn start-btn-green">Level 3 (Lava)</a>
+      <a href="nivel4.html" class="start-btn start-btn-yellow">Level 4 (Clouds)</a>
+      <a href="nivel5.html" class="start-btn start-btn-red">Level 5 (Pipe Land)</a>
+      <a href="nivel6.html" class="start-btn start-btn-blue">Level 6 (Random Maze)</a>
+      <a href="nivel7.html" class="start-btn start-btn-green">Level 7 (Winter)</a>
     </div>
   </div>
 </body>

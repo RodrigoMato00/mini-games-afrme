@@ -17,6 +17,7 @@ export function registerPlayerController() {
       this.keys = { w: false, a: false, s: false, d: false, space: false };
       this.grounded = false;
       this.body = null;
+      this.wasSpacePressed = false;
 
       this.onKeyDown = (e) => {
         const k = e.code.toLowerCase();
@@ -97,10 +98,12 @@ export function registerPlayerController() {
       v.x *= 0.92;
       v.z *= 0.92;
 
-      if (this.keys.space && this.grounded) {
+      // Salto solo al pulsar (flanco), no al mantener espacio, para evitar "vuelo"
+      if (this.keys.space && this.grounded && !this.wasSpacePressed) {
         v.y = this.data.jumpImpulse;
         this.grounded = false;
       }
+      this.wasSpacePressed = this.keys.space;
 
       this.body.velocity.set(v.x, v.y, v.z);
     },
@@ -245,6 +248,8 @@ export function registerPlayerControllerSimple() {
       this.vx = 0;
       this.vz = 0;
       this.grounded = true;
+      this.wasSpacePressed = false;
+      this.onSlipperyPlatform = false;
       this.sceneEl = this.el.sceneEl;
 
       this.onKeyDown = (e) => {
@@ -291,11 +296,23 @@ export function registerPlayerControllerSimple() {
         if (this.keys.a) { this.vx -= right.x * speed; this.vz -= right.z * speed; }
         if (this.keys.d) { this.vx += right.x * speed; this.vz += right.z * speed; }
       }
-      this.vx *= 0.82;
-      this.vz *= 0.82;
+      // Resbalar en plataformas de hielo (nivel 7): menos fricción
+      const onSlippery = this.onSlipperyPlatform === true && this.grounded;
+      if (onSlippery) {
+        this.vx *= 0.97;
+        this.vz *= 0.97;
+      } else {
+        this.vx *= 0.82;
+        this.vz *= 0.82;
+      }
       if (this.grounded) {
-        this.vx *= 0.9;
-        this.vz *= 0.9;
+        if (onSlippery) {
+          this.vx *= 0.98;
+          this.vz *= 0.98;
+        } else {
+          this.vx *= 0.9;
+          this.vz *= 0.9;
+        }
       }
 
       const level = this.sceneEl.querySelector('#level');
@@ -334,7 +351,9 @@ export function registerPlayerControllerSimple() {
         ? window.__level2MapBounds
         : (window.__currentLevel === 6 && window.__level6MapBounds)
           ? window.__level6MapBounds
-          : MAP_BOUNDS;
+          : (window.__currentLevel === 7 && window.__level7MapBounds)
+            ? window.__level7MapBounds
+            : MAP_BOUNDS;
       pos.x = Math.max(bounds.xMin, Math.min(bounds.xMax, pos.x));
       pos.z = Math.max(bounds.zMin, Math.min(bounds.zMax, pos.z));
 
@@ -387,15 +406,18 @@ export function registerPlayerControllerSimple() {
             this.grounded = true;
             landed = true;
             window.__lastLanding = 'platform';
+            this.onSlipperyPlatform = plat.classList && plat.classList.contains('slippery');
           }
         });
       }
+      if (!landed) this.onSlipperyPlatform = false;
       if (!landed && !groundIsLethal && footY <= GROUND_Y + 0.25 && this.vy <= 0) {
         pos.y = GROUND_Y + PLAYER_HALF.y;
         this.vy = 0;
         this.grounded = true;
         landed = true;
         window.__lastLanding = 'ground';
+        this.onSlipperyPlatform = false;
       }
       if (window.__currentLevel === 5 && this.grounded && window.__lastLanding === 'ground') {
         if (window.__level5GroundCountdown == null) window.__level5GroundCountdown = 5;
@@ -404,13 +426,15 @@ export function registerPlayerControllerSimple() {
       } else if (window.__currentLevel === 5) {
         window.__level5GroundCountdown = null;
       }
-      if (this.keys.space && this.grounded) {
+      // Salto solo al pulsar (flanco), no al mantener espacio, para evitar "vuelo"
+      if (this.keys.space && this.grounded && !this.wasSpacePressed) {
         this.vy = JUMP_VY;
         this.grounded = false;
         try {
           if (typeof window.__playJumpSound === 'function') window.__playJumpSound();
         } catch (e) { /* no romper el salto si el sonido falla */ }
       }
+      this.wasSpacePressed = this.keys.space;
 
       if (!landed && this.vy !== 0) this.grounded = false;
 
