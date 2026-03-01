@@ -51,7 +51,21 @@ export function registerFbxModel() {
       const Loader = await getFBXLoader();
       if (!Loader) return;
 
-      const loader = new Loader();
+      const THREE = window.AFRAME?.THREE;
+      let manager = null;
+      const h = typeof window !== 'undefined' && window.location.hostname;
+      if (THREE && (h === 'github.io' || (h && h.endsWith('.github.io')))) {
+        const parts = window.location.pathname.split('/').filter(Boolean);
+        if (parts.length >= 1) {
+          const base = window.location.origin + '/' + parts[0] + '/';
+          manager = new THREE.LoadingManager();
+          manager.setURLModifier((url) => {
+            if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) return url;
+            return base + url.replace(/^\//, '');
+          });
+        }
+      }
+      const loader = manager ? new Loader(manager) : new Loader();
       if (resourcePath) loader.setResourcePath(resourcePath);
       loader.load(
         src,
