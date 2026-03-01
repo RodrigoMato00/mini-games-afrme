@@ -1,5 +1,5 @@
 /**
- * UI overlay: puntuación, tiempo restante, mensaje de victoria/derrota.
+ * UI overlay: score, time left, victory/game over message.
  */
 
 import { getGameState } from './game-state.js';
@@ -11,11 +11,11 @@ function createUI() {
   div.id = 'game-ui';
   div.innerHTML = `
     <div id="game-instructions" class="game-instructions">
-      WASD mover · Espacio saltar · Recogé las 10 monedas (la última está en la puerta del castillo) para ganar. ¡Evitá a los enemigos o saltales encima!
+      WASD move · Space jump · Collect all 10 coins (the last is at the castle) to win. Avoid enemies or stomp them!
     </div>
     <div class="game-hud">
       <span id="game-score">0</span> pts &nbsp;|&nbsp;
-      <span id="game-coins">0</span>/<span id="game-total-coins">0</span> monedas &nbsp;|&nbsp;
+      <span id="game-coins">0</span>/<span id="game-total-coins">0</span> coins &nbsp;|&nbsp;
       <span id="game-time">120</span> s
     </div>
     <div id="game-message" class="game-message hidden"></div>
@@ -62,8 +62,8 @@ export function updateUI() {
   if (msgEl && g.gameOver) {
     msgEl.classList.remove('hidden');
     msgEl.style.display = 'flex';
-    const text = g.won ? '¡Ganaste! Llegaste al castillo y recogiste la moneda de la princesa.' : (g.timeLeft <= 0 ? '¡Tiempo! Game Over.' : '¡Te atraparon! Game Over.');
-    const hint = ' (R, Enter o Espacio para reiniciar)';
+    const text = g.won ? 'You won! You reached the castle and got the princess\'s coin.' : (g.timeLeft <= 0 ? 'Time\'s up! Game Over.' : 'You got caught! Game Over.');
+    const hint = ' (R, Enter or Space to restart)';
     const level = window.__currentLevel || 1;
     msgEl.innerHTML = '';
     const textEl = document.createElement('span');
@@ -75,15 +75,14 @@ export function updateUI() {
     const btnStyle = 'font-size: 18px; padding: 12px 24px; cursor: pointer; color: #fff; border: none; border-radius: 8px; font-weight: bold;';
     const btnRestart = document.createElement('button');
     btnRestart.className = 'game-over-btn';
-    btnRestart.textContent = g.won ? 'Reiniciar nivel' : 'Volver a empezar';
+    btnRestart.textContent = g.won ? 'Restart level' : 'Try again';
     btnRestart.style.cssText = btnStyle + ' background: #4CAF50;';
     btnRestart.addEventListener('click', () => { if (window.__restartGame) window.__restartGame(); });
-    // Si ganaste: primero "Siguiente nivel" (o "Volver al inicio" en último nivel), después "Reiniciar nivel"
     if (g.won) {
       const nextHref = level === 1 ? 'nivel2.html' : level === 2 ? 'nivel3.html' : level === 3 ? 'nivel4.html' : null;
       const btnNext = document.createElement('button');
       btnNext.className = 'game-over-btn-next';
-      btnNext.textContent = nextHref ? 'Siguiente nivel' : 'Volver al inicio';
+      btnNext.textContent = nextHref ? 'Next level' : 'Back to start';
       btnNext.style.cssText = btnStyle + ' background: #2196F3;';
       btnNext.addEventListener('click', () => {
         window.location.href = nextHref || 'index.html';
@@ -91,6 +90,12 @@ export function updateUI() {
       btnWrap.appendChild(btnNext);
     }
     btnWrap.appendChild(btnRestart);
+    const btnMenu = document.createElement('button');
+    btnMenu.className = 'game-over-btn-menu';
+    btnMenu.textContent = 'Menu';
+    btnMenu.style.cssText = btnStyle + ' background: #666;';
+    btnMenu.addEventListener('click', () => { window.location.href = 'index.html'; });
+    btnWrap.appendChild(btnMenu);
     msgEl.appendChild(btnWrap);
   }
 }

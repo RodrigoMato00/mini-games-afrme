@@ -130,7 +130,7 @@ export class Game {
 function showClickToPlay(sceneEl) {
   const overlay = document.createElement('div');
   overlay.id = 'click-to-play';
-  overlay.innerHTML = 'Hacé click acá para jugar · WASD mover · Espacio saltar';
+  overlay.innerHTML = 'Click here to play · WASD move · Space jump';
   overlay.style.cssText = 'position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);color:#fff;font-size:22px;font-family:sans-serif;text-align:center;cursor:pointer;pointer-events:auto;';
   overlay.addEventListener('click', () => {
     if (sceneEl.canvas) sceneEl.canvas.requestPointerLock();

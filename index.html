@@ -1,26 +1,86 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Retro Platform 3D</title>
-  <!-- A-Frame y dependencias (p. ej. three-bmfont-text) usan new Function(); sin 'unsafe-eval' la CSP bloquea y la pantalla queda en blanco -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://threejs.org;">
+  <title>Retro Platform 3D — Start</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://threejs.org;">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <style>
-    html, body { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; }
+    html, body { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; font-family: sans-serif; }
     a-scene { display: block; height: 100%; width: 100%; }
+    #start-overlay {
+      position: fixed; inset: 0; z-index: 100; display: flex; flex-direction: column;
+      align-items: center; justify-content: flex-end; padding-bottom: 320px; background: rgba(0,0,0,0.25);
+      pointer-events: none;
+    }
+    #start-overlay > * { pointer-events: auto; }
+    .start-buttons { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+    .start-btn {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 12px; padding: 16px 24px; cursor: pointer; border: none; border-radius: 8px;
+      font-weight: bold; color: #fff; text-decoration: none; transition: transform 0.15s, box-shadow 0.15s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px 1px 0 #000;
+      letter-spacing: 0.02em;
+    }
+    .start-btn:hover { transform: scale(1.05); box-shadow: 0 6px 16px rgba(0,0,0,0.4); }
+    .start-btn-primary { background: linear-gradient(180deg, #E52521, #B91E1A); color: #fff; }
+    .start-btn-level { background: linear-gradient(180deg, #F1C40F, #D4AC0D); color: #1a1a1a; text-shadow: 1px 1px 0 #fff, -1px -1px 0 rgba(0,0,0,0.3); }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/aframe/1.7.0/aframe.min.js"></script>
-  <!-- c-frame fork con soporte Cannon; driver válido es "local" (Cannon en main thread) o "worker" -->
-  <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@4.2.4/dist/aframe-physics-system.min.js"></script>
-  <script type="importmap">{"imports":{"three":"./src/js/three-shim.js"}}</script>
 </head>
 <body>
-  <!-- Escena en el HTML para que A-Frame la inicialice correctamente en Chrome (createElement + appendChild puede no hacer upgrade del custom element) -->
-  <a-scene id="main-scene" embedded
-    background="color: #5C94FC"
-    fog="type: linear; color: #7EB8FA; near: 25; far: 85">
+  <a-scene id="start-scene" embedded
+    background="color: #24CAFF"
+    loading-screen="dotsColor: #fff; backgroundColor: #333;">
+    <a-camera position="0 0 8" look-controls="enabled: false"></a-camera>
+    <!-- Iluminación generosa para que los logos se vean bien -->
+    <a-entity light="type: ambient; color: #fff; intensity: 1.2"></a-entity>
+    <a-entity light="type: directional; color: #fff; intensity: 1.2; position: 0 4 4" castShadow></a-entity>
+    <a-entity light="type: directional; color: #fff; intensity: 0.9; position: -4 3 2"></a-entity>
+    <a-entity light="type: directional; color: #fff; intensity: 0.9; position: 4 3 2"></a-entity>
+    <a-entity light="type: point; color: #fff; intensity: 1.5; position: -1.5 1 2" distance="8"></a-entity>
+    <a-entity light="type: point; color: #fff; intensity: 1.5; position: 1.5 1 2" distance="8"></a-entity>
+    <!-- Logo Mario (izquierda): inclinación y posición más cerca de la A -->
+    <a-entity id="mario-logo" position="-1.5 0.5 0" rotation="21 0 0" scale="0.08 0.08 0.08">
+      <a-entity obj-model="obj: url(objetos/logo-mario/source/LogoMario.obj); mtl: url(objetos/logo-mario/source/LogoMario.mtl)"></a-entity>
+    </a-entity>
+    <!-- Logo A-Frame oficial (derecha): más cerca del Mario -->
+    <a-entity id="aframe-logo" position="1.5 0.3 0" rotation="0 45 0" scale="0.04 0.04 0.04">
+      <a-entity rotation="-20 0 0" position="0 0 10.75">
+        <a-box width="12.5" depth="1" height="30" color="#EF2D5E" position="0 15 0">
+          <a-entity rotation="-140 0 0" position="0 15 0">
+            <a-box width="12.49" depth="0.1" height="30" color="#24CAFF" position="0 15 -0.52"></a-box>
+            <a-box width="12.5" depth="1" height="30" color="#EF2D5E" position="0 15 0"></a-box>
+          </a-entity>
+        </a-box>
+      </a-entity>
+      <a-entity rotation="-90 0 0" position="0 8 7.5">
+        <a-box width="12.45" depth="0.1" height="14" color="#F2E646" position="0 7 0.52"></a-box>
+        <a-box width="12.5" depth="1" height="14" color="#EF2D5E" position="0 7 0"></a-box>
+      </a-entity>
+      <a-entity rotation="-90 0 0">
+        <a-plane width="12.5" height="20" position="0 0 0.1" color="#21897C"></a-plane>
+      </a-entity>
+      <a-plane width="30" height="30" color="#249889" rotation="-90 0 0" position="0 -5 2"></a-plane>
+      <a-entity position="-10 0.2 -10">
+        <a-cylinder radius="0.5" height="2" color="#8D6E63" position="0 1 0"></a-cylinder>
+        <a-box width="1.5" height="1.5" depth="1.5" color="#26A69A" position="0 2.2 0"></a-box>
+      </a-entity>
+    </a-entity>
+    <a-sky color="#24CAFF"></a-sky>
   </a-scene>
-  <script type="module" src="src/js/main.js"></script>
+
+  <div id="start-overlay">
+    <div class="start-buttons">
+      <a href="nivel1.html" class="start-btn start-btn-primary">Play Level 1</a>
+      <a href="nivel2.html" class="start-btn start-btn-level">Level 2</a>
+      <a href="nivel3.html" class="start-btn start-btn-level">Level 3</a>
+      <a href="nivel4.html" class="start-btn start-btn-level">Level 4</a>
+    </div>
+  </div>
 </body>
 </html>

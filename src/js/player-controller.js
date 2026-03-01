@@ -378,6 +378,9 @@ export function registerPlayerControllerSimple() {
       if (this.keys.space && this.grounded) {
         this.vy = JUMP_VY;
         this.grounded = false;
+        try {
+          if (typeof window.__playJumpSound === 'function') window.__playJumpSound();
+        } catch (e) { /* no romper el salto si el sonido falla */ }
       }
 
       if (!landed && this.vy !== 0) this.grounded = false;
@@ -387,6 +390,9 @@ export function registerPlayerControllerSimple() {
           const c = getWorldPosition(coin);
           const dx = pos.x - c.x, dz = pos.z - c.z;
           if (dx * dx + dz * dz < COIN_COLLECT_DIST * COIN_COLLECT_DIST) {
+            if (window.__currentLevel === 2) {
+              console.log('[Coin collected] id:', coin.id || '(no id)', 'position: x=', c.x.toFixed(2), 'y=', c.y.toFixed(2), 'z=', c.z.toFixed(2));
+            }
             coin.parentNode?.removeChild(coin);
             if (window.__onCoinCollect) window.__onCoinCollect();
           }
