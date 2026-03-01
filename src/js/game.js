@@ -6,8 +6,9 @@ import { createPlayer } from './player.js';
 import { createLevel } from './level.js';
 import { registerPlayerController, registerPlayerControllerSimple } from './player-controller.js';
 import { registerCollectables } from './collectables.js';
-import { createGameState, getGameState, onCoinCollect, onPlayerKilled, onEnemyStomp, stopTimer } from './game-state.js';
+import { createGameState, getGameState, onCoinCollect, onPlayerKilled, onEnemyStomp, stopTimer, TIME_INITIAL } from './game-state.js';
 import { initUI, updateUI, hideMessage } from './ui.js';
+import { playBgMusic, restartBgMusic, playJump, playGameOver } from './sounds.js';
 import './enemy-movement.js';
 import './hittable-block.js';
 import { registerFbxModel } from './fbx-model.js';
@@ -21,14 +22,18 @@ function hasPhysics() {
 }
 
 export class Game {
-  constructor(sceneEl) {
+  constructor(sceneEl, options = {}) {
     this.sceneEl = sceneEl;
     this.player = null;
+    this.options = options;
+    this.totalCoins = options.totalCoins != null ? options.totalCoins : TOTAL_COINS;
+    this.initialTime = options.initialTime != null ? options.initialTime : TIME_INITIAL;
+    this.levelCreator = options.levelCreator || createLevel;
   }
 
   start() {
     const usePhysics = hasPhysics();
-    createGameState(TOTAL_COINS);
+    createGameState(this.totalCoins, this.initialTime);
     const state = window.__gameState;
 
     window.__onCoinCollect = onCoinCollect;
@@ -40,7 +45,7 @@ export class Game {
       updateUI();
     };
 
-    initUI(TOTAL_COINS);
+    initUI(this.totalCoins);
 
     state.timerId = setInterval(() => {
       state.timeLeft -= 1;
@@ -48,6 +53,7 @@ export class Game {
       if (state.timeLeft <= 0) {
         state.gameOver = true;
         stopTimer();
+        playGameOver();
         window.__onGameEnd();
       }
     }, 1000);
@@ -58,8 +64,25 @@ export class Game {
 
     const useSimpleController = true;
     this.player = createPlayer(this.sceneEl, useSimpleController ? false : usePhysics);
+    if (this.options.startPosition) {
+      this.player.setAttribute('position', this.options.startPosition);
+    }
 
     window.__restartGame = () => this.restart();
+    window.__playJumpSound = playJump;
+
+    playBgMusic(window.__currentLevel || 1);
+
+    this._onKeyDownRestart = (e) => {
+      const g = getGameState();
+      if (!g || !g.gameOver) return;
+      const key = e.code || e.key || '';
+      if (key === 'KeyR' || key === 'Enter' || key === 'Space') {
+        e.preventDefault();
+        if (window.__restartGame) window.__restartGame();
+      }
+    };
+    document.addEventListener('keydown', this._onKeyDownRestart);
 
     showClickToPlay(this.sceneEl);
   }
@@ -68,7 +91,7 @@ export class Game {
     const state = getGameState();
     if (state && state.timerId) clearInterval(state.timerId);
 
-    createGameState(TOTAL_COINS);
+    createGameState(this.totalCoins, this.initialTime);
     const usePhysics = hasPhysics();
 
     const levelEl = this.sceneEl.querySelector('#level');
@@ -76,10 +99,14 @@ export class Game {
     if (levelEl) levelEl.remove();
     if (playerEl) playerEl.remove();
 
-    const levelContainer = createLevel(this.sceneEl, usePhysics);
+    const result = this.levelCreator(this.sceneEl, usePhysics);
+    const levelContainer = result && result.container ? result.container : result;
     this.sceneEl.appendChild(levelContainer);
 
     this.player = createPlayer(this.sceneEl, false);
+    if (result && result.startPosition) {
+      this.player.setAttribute('position', result.startPosition);
+    }
 
     const newState = getGameState();
     newState.timerId = setInterval(() => {
@@ -88,10 +115,12 @@ export class Game {
       if (newState.timeLeft <= 0) {
         newState.gameOver = true;
         stopTimer();
+        playGameOver();
         window.__onGameEnd();
       }
     }, 1000);
 
+    restartBgMusic();
     hideMessage();
     updateUI();
     showClickToPlay(this.sceneEl);

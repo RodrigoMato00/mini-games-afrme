@@ -63,22 +63,35 @@ export function updateUI() {
     msgEl.classList.remove('hidden');
     msgEl.style.display = 'flex';
     const text = g.won ? '¡Ganaste! Llegaste al castillo y recogiste la moneda de la princesa.' : (g.timeLeft <= 0 ? '¡Tiempo! Game Over.' : '¡Te atraparon! Game Over.');
-    let textEl = msgEl.querySelector('.game-over-text');
-    if (!msgEl.querySelector('.game-over-btn')) {
-      textEl = document.createElement('span');
-      textEl.className = 'game-over-text';
-      const btn = document.createElement('button');
-      btn.className = 'game-over-btn';
-      btn.textContent = 'Volver a empezar';
-      btn.style.cssText = 'font-size: 20px; padding: 12px 24px; cursor: pointer; background: #4CAF50; color: #fff; border: none; border-radius: 8px; font-weight: bold;';
-      btn.addEventListener('click', () => {
-        if (window.__restartGame) window.__restartGame();
+    const hint = ' (R, Enter o Espacio para reiniciar)';
+    const level = window.__currentLevel || 1;
+    msgEl.innerHTML = '';
+    const textEl = document.createElement('span');
+    textEl.className = 'game-over-text';
+    textEl.textContent = text + hint;
+    msgEl.appendChild(textEl);
+    const btnWrap = document.createElement('div');
+    btnWrap.style.cssText = 'display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;';
+    const btnStyle = 'font-size: 18px; padding: 12px 24px; cursor: pointer; color: #fff; border: none; border-radius: 8px; font-weight: bold;';
+    const btnRestart = document.createElement('button');
+    btnRestart.className = 'game-over-btn';
+    btnRestart.textContent = g.won ? 'Reiniciar nivel' : 'Volver a empezar';
+    btnRestart.style.cssText = btnStyle + ' background: #4CAF50;';
+    btnRestart.addEventListener('click', () => { if (window.__restartGame) window.__restartGame(); });
+    // Si ganaste: primero "Siguiente nivel" (o "Volver al inicio" en último nivel), después "Reiniciar nivel"
+    if (g.won) {
+      const nextHref = level === 1 ? 'nivel2.html' : level === 2 ? 'nivel3.html' : level === 3 ? 'nivel4.html' : null;
+      const btnNext = document.createElement('button');
+      btnNext.className = 'game-over-btn-next';
+      btnNext.textContent = nextHref ? 'Siguiente nivel' : 'Volver al inicio';
+      btnNext.style.cssText = btnStyle + ' background: #2196F3;';
+      btnNext.addEventListener('click', () => {
+        window.location.href = nextHref || 'index.html';
       });
-      msgEl.innerHTML = '';
-      msgEl.appendChild(textEl);
-      msgEl.appendChild(btn);
+      btnWrap.appendChild(btnNext);
     }
-    if (textEl) textEl.textContent = text;
+    btnWrap.appendChild(btnRestart);
+    msgEl.appendChild(btnWrap);
   }
 }
 

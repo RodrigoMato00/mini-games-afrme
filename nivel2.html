@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Retro Platform 3D — Nivel 2</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://threejs.org;">
+  <style>
+    html, body { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; }
+    a-scene { display: block; height: 100%; width: 100%; }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aframe/1.7.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@4.2.4/dist/aframe-physics-system.min.js"></script>
+  <script type="importmap">{"imports":{"three":"./src/js/three-shim.js"}}</script>
+</head>
+<body>
+  <a-scene id="main-scene" embedded
+    background="color: #5C94FC"
+    fog="type: linear; color: #7EB8FA; near: 25; far: 90">
+  </a-scene>
+  <script type="module" src="src/js/main-level2.js"></script>
+</body>
+</html>

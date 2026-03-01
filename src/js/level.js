@@ -168,7 +168,7 @@ function createCastle(parent, usePhysics) {
   const base = document.createElement('a-entity');
   base.setAttribute('id', 'castle');
   base.setAttribute('position', `${cx} 1.2 ${cz}`);
-  base.setAttribute('rotation', '0 90 0');
+  base.setAttribute('rotation', '0 -90 0');
   base.setAttribute('fbx-model', `src: ${ASSET_PATHS.castleModel}; scale: 0.0006 0.0006 0.0006; rotation: 0 0 0`);
   base.setAttribute('shadow', 'cast: true; receive: true');
   if (usePhysics) base.setAttribute('static-body', '');
@@ -177,4 +177,4 @@ function createCastle(parent, usePhysics) {
   createCoin(parent, 'coin-castle', cx - 1.2, 2, cz, usePhysics);
 }
 
-export { RETRO_COLORS, createBox, createCoin, LEVEL_DATA };
+export { RETRO_COLORS, createBox, createCoin, createPipe, createEnemy, createCastle, ASSET_PATHS, TEXTURE_URLS, LEVEL_DATA };

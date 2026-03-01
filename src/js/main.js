@@ -1,9 +1,11 @@
 /**
  * Punto de entrada: la escena está en el HTML (id="main-scene"); aquí se inyecta contenido y se arranca el juego.
+ * La música de fondo se precarga antes de cargar el nivel.
  */
 
 import { injectSceneContent } from './scene.js';
 import { Game } from './game.js';
+import { preloadBgMusic } from './sounds.js';
 
 function init() {
   const sceneEl = document.getElementById('main-scene');
@@ -14,9 +16,13 @@ function init() {
 
   function startGame() {
     try {
-      injectSceneContent(sceneEl);
-      const game = new Game(sceneEl);
-      game.start();
+      window.__currentLevel = 1;
+      window.__groundIsLethal = true;
+      preloadBgMusic(1).then(() => {
+        injectSceneContent(sceneEl);
+        const game = new Game(sceneEl);
+        game.start();
+      });
     } catch (err) {
       console.error('[Retro] Error al iniciar:', err);
     }
@@ -24,7 +30,6 @@ function init() {
 
   sceneEl.addEventListener('loaded', startGame);
 
-  // Por si 'loaded' ya se disparó antes de que nuestro script registrara el listener
   if (sceneEl.hasLoaded) startGame();
 }
 

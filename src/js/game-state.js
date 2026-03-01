@@ -3,16 +3,18 @@
  * Accesible por componentes (monedas, enemigos, UI).
  */
 
+import { playCoin, playGameOver, playWin } from './sounds.js';
+
 export const COIN_POINTS = 100;
 export const STOMP_POINTS = 50;
-export const TIME_INITIAL = 120; // segundos
+export const TIME_INITIAL = 120; // segundos (nivel 1)
 
-export function createGameState(totalCoins) {
+export function createGameState(totalCoins, initialTime) {
   const state = {
     score: 0,
     coinsCollected: 0,
     totalCoins: totalCoins || 9,
-    timeLeft: TIME_INITIAL,
+    timeLeft: initialTime != null ? initialTime : TIME_INITIAL,
     gameOver: false,
     won: false,
     timerId: null,
@@ -28,11 +30,13 @@ export function getGameState() {
 export function onCoinCollect() {
   const g = getGameState();
   if (!g || g.gameOver || g.won) return;
+  playCoin();
   g.coinsCollected += 1;
   g.score += COIN_POINTS;
   if (g.coinsCollected >= g.totalCoins) {
     g.won = true;
     g.gameOver = true;
+    playWin();
     if (window.__onGameEnd) window.__onGameEnd('won');
   }
   if (window.__onScoreUpdate) window.__onScoreUpdate();
@@ -42,6 +46,7 @@ export function onPlayerKilled() {
   const g = getGameState();
   if (!g || g.gameOver || g.won) return;
   g.gameOver = true;
+  playGameOver();
   if (window.__onGameEnd) window.__onGameEnd('killed');
 }
 

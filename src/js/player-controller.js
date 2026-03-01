@@ -140,6 +140,20 @@ export function registerPlayerControllerSimple() {
 
   function getObstacleBoxFromEl(el) {
     if (!THREE) return null;
+    const w = parseFloat(el.getAttribute('data-width')) || parseFloat(el.getAttribute('width'));
+    const h = parseFloat(el.getAttribute('data-height')) || parseFloat(el.getAttribute('height'));
+    const d = parseFloat(el.getAttribute('data-depth')) || parseFloat(el.getAttribute('depth'));
+    if (w > 0 && h > 0 && d > 0) {
+      const p = getWorldPosition(el);
+      const hw = w / 2, hh = h / 2, hd = d / 2;
+      return {
+        x: p.x, y: p.y, z: p.z,
+        w, h, d,
+        xMin: p.x - hw, xMax: p.x + hw,
+        yMin: p.y - hh, yMax: p.y + hh,
+        zMin: p.z - hd, zMax: p.z + hd,
+      };
+    }
     el.object3D.updateMatrixWorld(true);
     const box = new THREE.Box3().setFromObject(el.object3D);
     const size = new THREE.Vector3();
@@ -316,8 +330,11 @@ export function registerPlayerControllerSimple() {
           this.vz = 0;
         }
       }
-      pos.x = Math.max(MAP_BOUNDS.xMin, Math.min(MAP_BOUNDS.xMax, pos.x));
-      pos.z = Math.max(MAP_BOUNDS.zMin, Math.min(MAP_BOUNDS.zMax, pos.z));
+      const bounds = (window.__currentLevel === 2 && window.__level2MapBounds)
+        ? window.__level2MapBounds
+        : MAP_BOUNDS;
+      pos.x = Math.max(bounds.xMin, Math.min(bounds.xMax, pos.x));
+      pos.z = Math.max(bounds.zMin, Math.min(bounds.zMax, pos.z));
 
       this.vy += GRAVITY;
       pos.y += this.vy;
@@ -325,20 +342,22 @@ export function registerPlayerControllerSimple() {
       const platforms = level ? level.querySelectorAll('.platform') : [];
       let landed = false;
       const footY = pos.y - PLAYER_HALF.y;
+      const groundIsLethal = window.__groundIsLethal !== false;
 
-      if (footY <= GROUND_Y + 0.05 || pos.y < -2) {
+      if (groundIsLethal && (footY <= GROUND_Y + 0.05 || pos.y < -2)) {
         if (window.__onPlayerKilled) window.__onPlayerKilled();
         return;
       }
       if (!landed) {
         platforms.forEach((plat) => {
+          if (plat.classList && plat.classList.contains('maze-wall')) return;
           const p = getWorldPosition(plat);
-          const w = plat.getAttribute('width') || 1;
-          const h = plat.getAttribute('height') || 1;
-          const d = plat.getAttribute('depth') || 1;
-          const top = p.y + h / 2;
-          const halfW = w / 2 + PLAYER_HALF.x + PLATFORM_MARGIN;
-          const halfD = d / 2 + PLAYER_HALF.z + PLATFORM_MARGIN;
+          const w = plat.getAttribute('width') || plat.getAttribute('data-width') || 1;
+          const h = plat.getAttribute('height') || plat.getAttribute('data-height') || 1;
+          const d = plat.getAttribute('depth') || plat.getAttribute('data-depth') || 1;
+          const top = p.y + Number(h) / 2;
+          const halfW = Number(w) / 2 + PLAYER_HALF.x + PLATFORM_MARGIN;
+          const halfD = Number(d) / 2 + PLAYER_HALF.z + PLATFORM_MARGIN;
           const onTop = pos.y >= top + PLAYER_HALF.y - STANDING_TOLERANCE && pos.y <= top + PLAYER_HALF.y + STANDING_TOLERANCE;
           const inBounds = Math.abs(pos.x - p.x) < halfW && Math.abs(pos.z - p.z) < halfD;
           const fallingOnto = footY <= top + LANDING_FOOT_MAX && footY >= top - LANDING_FOOT_MIN && this.vy <= 0;
@@ -349,6 +368,12 @@ export function registerPlayerControllerSimple() {
             landed = true;
           }
         });
+      }
+      if (!landed && !groundIsLethal && footY <= GROUND_Y + 0.25 && this.vy <= 0) {
+        pos.y = GROUND_Y + PLAYER_HALF.y;
+        this.vy = 0;
+        this.grounded = true;
+        landed = true;
       }
       if (this.keys.space && this.grounded) {
         this.vy = JUMP_VY;
