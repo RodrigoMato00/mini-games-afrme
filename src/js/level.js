@@ -20,7 +20,7 @@ const TEXTURE_URLS = {
   water: '#tex-water',
 };
 
-/** Base URL para assets (en GitHub Pages es /repo-name/, en local ./) */
+/** Base URL absoluta para assets: en GitHub Pages evita que las texturas del FBX fallen */
 function getAssetBase() {
   if (typeof window === 'undefined') return './';
   if (window.__assetBase) return window.__assetBase;
@@ -28,7 +28,10 @@ function getAssetBase() {
   if (h === 'github.io' || h.endsWith('.github.io')) {
     const path = window.location.pathname;
     const parts = path.split('/').filter(Boolean);
-    if (parts.length >= 1) return '/' + parts[0] + '/';
+    if (parts.length >= 1) {
+      const repoPath = '/' + parts[0] + '/';
+      return window.location.origin + repoPath;
+    }
   }
   return './';
 }
