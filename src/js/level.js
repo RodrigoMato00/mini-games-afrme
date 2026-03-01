@@ -124,7 +124,7 @@ function createEnemy(parent, id, x, y, z, range = 2) {
   root.setAttribute('enemy-movement', `range: ${range}; axis: x`);
 
   const model = document.createElement('a-entity');
-  model.setAttribute('fbx-model', `src: ${ASSET_PATHS.goombaModel}; scale: 0.5 0.5 0.5; rotation: 0 0 0; resourcePath: assets/textures/goomba/`);
+  model.setAttribute('fbx-model', `src: ${ASSET_PATHS.goombaModel}; scale: 0.5 0.5 0.5; rotation: 0 0 0; resourcePath: assets/models/`);
   model.setAttribute('shadow', 'cast: true');
   root.appendChild(model);
 
