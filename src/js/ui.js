@@ -63,7 +63,9 @@ export function updateUI() {
     msgEl.classList.remove('hidden');
     msgEl.style.display = 'flex';
     const text = g.won ? 'You won! You reached the castle and got the princess\'s coin.' : (g.timeLeft <= 0 ? 'Time\'s up! Game Over.' : 'You got caught! Game Over.');
-    const hint = ' (R, Enter or Space to restart)';
+    const hint = g.won
+      ? ' (R or Space = restart level, Enter = next level)'
+      : ' (R or Space to try again)';
     const level = window.__currentLevel || 1;
     msgEl.innerHTML = '';
     const textEl = document.createElement('span');

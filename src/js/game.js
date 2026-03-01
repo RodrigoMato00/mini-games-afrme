@@ -73,16 +73,23 @@ export class Game {
 
     playBgMusic(window.__currentLevel || 1);
 
-    this._onKeyDownRestart = (e) => {
+    this._onKeyDownGameOver = (e) => {
       const g = getGameState();
       if (!g || !g.gameOver) return;
-      const key = e.code || e.key || '';
-      if (key === 'KeyR' || key === 'Enter' || key === 'Space') {
+      const key = (e.code || e.key || '').replace('Key', '');
+      if (key === 'R' || key === 'Space') {
         e.preventDefault();
         if (window.__restartGame) window.__restartGame();
+        return;
+      }
+      if (key === 'Enter' && g.won) {
+        e.preventDefault();
+        const level = window.__currentLevel || 1;
+        const nextHref = level === 1 ? 'nivel2.html' : level === 2 ? 'nivel3.html' : level === 3 ? 'nivel4.html' : 'index.html';
+        window.location.href = nextHref;
       }
     };
-    document.addEventListener('keydown', this._onKeyDownRestart);
+    document.addEventListener('keydown', this._onKeyDownGameOver);
 
     showClickToPlay(this.sceneEl);
   }
