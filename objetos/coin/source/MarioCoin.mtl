@@ -1,0 +1,12 @@
+# Blender 4.1.1 MTL File: 'MarioCoin.blend'
+# www.blender.org
+
+newmtl Mario_Coin
+Ns 217.250809
+Ka 0.983051 0.983051 0.983051
+Kd 0.800189 0.702350 0.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.010000 0.008718 0.000000
+Ni 1.500000
+d 1.000000
+illum 3

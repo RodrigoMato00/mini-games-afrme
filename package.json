@@ -1,0 +1,13 @@
+{
+  "name": "retro-aframe",
+  "version": "1.0.0",
+  "description": "Juego retro 3D tipo plataformas con A-Frame (escena generada desde JavaScript)",
+  "type": "module",
+  "scripts": {
+    "start": "npx serve -l 3000",
+    "dev": "npx serve -l 3000"
+  },
+  "keywords": ["aframe", "game", "retro", "3d", "platformer"],
+  "author": "",
+  "license": "MIT"
+}
