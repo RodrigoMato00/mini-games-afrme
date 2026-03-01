@@ -57,6 +57,14 @@ export function registerFbxModel() {
         src,
         (model) => {
           this.model = model;
+          const THREE = window.AFRAME?.THREE;
+          if (THREE) {
+            model.updateMatrixWorld(true);
+            const box = new THREE.Box3().setFromObject(model);
+            const size = new THREE.Vector3();
+            box.getSize(size);
+            console.log('[fbx-model] Tamaño del modelo (antes de escala):', src, '→ ancho:', size.x.toFixed(2), 'alto:', size.y.toFixed(2), 'fondo:', size.z.toFixed(2), 'unidades');
+          }
           model.scale.set(scale.x, scale.y, scale.z);
           model.rotation.set(
             (rotation.x * Math.PI) / 180,
@@ -65,6 +73,7 @@ export function registerFbxModel() {
           );
           model.position.set(0, 0, 0);
           model.updateMatrixWorld(true);
+          const isNube = src.indexOf('nube') !== -1;
           model.traverse((node) => {
             node.frustumCulled = false;
             if (node.material) {
@@ -73,10 +82,17 @@ export function registerFbxModel() {
                 m.transparent = false;
                 m.opacity = 1;
                 m.depthWrite = true;
+                if (isNube) {
+                  m.emissiveIntensity = 0;
+                  if (m.emissive) m.emissive.setHex(0x000000);
+                  m.roughness = 1;
+                  m.metalness = 0;
+                  if (m.color) m.color.multiplyScalar(0.7);
+                  if (m.envMapIntensity !== undefined) m.envMapIntensity = 0;
+                }
               });
             }
           });
-          const THREE = window.AFRAME?.THREE;
           const clips = (model.animations || []).length ? model.animations : (model.children[0]?.animations || []);
           const isGoomba = src.indexOf('goomba') !== -1;
           if (isGoomba && clips.length === 0) {

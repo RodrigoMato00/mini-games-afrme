@@ -42,10 +42,22 @@ export function injectSceneContent(scene) {
   sky.setAttribute('radius', '500');
   scene.appendChild(sky);
 
+  const SKY_RADIUS = 500;
+  const FOG_NEAR = 25;
+  const FOG_FAR = 85;
   const cloudPositions = [
-    [-120, 85, -90], [80, 95, -110], [-40, 92, -150], [150, 88, -80], [0, 100, -120],
-    [-80, 78, -60], [100, 82, -180], [-160, 90, -100], [60, 86, -140], [130, 94, -200],
+    [-38, 28, -35], [-28, 30, -55], [-18, 26, -65],
+    [-8, 29, -40], [0, 27, -50], [8, 31, -60],
+    [12, 25, -30], [22, 28, -45], [28, 30, -55],
+    [15, 27, 10], [25, 29, 18], [32, 26, 6], [-10, 28, 12], [5, 30, 22], [30, 25, 14],
+    [35, 29, -25], [38, 27, -40], [-35, 31, 8], [18, 26, -20],
   ];
+  console.log('[cielo] Tamaño del cielo: a-sky radius =', SKY_RADIUS, '| fog near =', FOG_NEAR, 'far =', FOG_FAR, '(solo se ve bien dentro de ~' + FOG_FAR + ' unidades)');
+  console.log('[cielo] Nubes (esferas): cantidad =', cloudPositions.length, '| posiciones =', JSON.stringify(cloudPositions));
+  const xs = cloudPositions.map((p) => p[0]);
+  const ys = cloudPositions.map((p) => p[1]);
+  const zs = cloudPositions.map((p) => p[2]);
+  console.log('[cielo] Rango nubes: X', Math.min(...xs).toFixed(0), 'a', Math.max(...xs).toFixed(0), '| Y', Math.min(...ys).toFixed(0), 'a', Math.max(...ys).toFixed(0), '| Z', Math.min(...zs).toFixed(0), 'a', Math.max(...zs).toFixed(0), '→ repartidas en el cielo visible');
   cloudPositions.forEach((pos, i) => {
     const cloud = document.createElement('a-entity');
     cloud.setAttribute('position', pos.join(' '));
