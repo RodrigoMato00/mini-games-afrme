@@ -347,13 +347,15 @@ export function registerPlayerControllerSimple() {
           this.vz = 0;
         }
       }
-      const bounds = (window.__currentLevel === 2 && window.__level2MapBounds)
+      const bounds = ((window.__currentLevel === 2 || window.__currentLevel === 9) && window.__level2MapBounds)
         ? window.__level2MapBounds
         : (window.__currentLevel === 6 && window.__level6MapBounds)
           ? window.__level6MapBounds
           : (window.__currentLevel === 7 && window.__level7MapBounds)
             ? window.__level7MapBounds
-            : MAP_BOUNDS;
+            : (window.__currentLevel === 8 && window.__level8MapBounds)
+              ? window.__level8MapBounds
+              : MAP_BOUNDS;
       pos.x = Math.max(bounds.xMin, Math.min(bounds.xMax, pos.x));
       pos.z = Math.max(bounds.zMin, Math.min(bounds.zMax, pos.z));
 
@@ -448,15 +450,18 @@ export function registerPlayerControllerSimple() {
           }
         });
         const enemies = level.querySelectorAll('.enemy');
+        const margin = (window.__currentLevel === 8) ? 0.95 : ENEMY_HIT_MARGIN;
+        const topOffset = (window.__currentLevel === 8) ? 0.22 : ENEMY_TOP_OFFSET;
         for (let i = 0; i < enemies.length; i++) {
           const enemy = enemies[i];
           const e = getWorldPosition(enemy);
           const dx = Math.abs(pos.x - e.x);
           const dz = Math.abs(pos.z - e.z);
-          if (dx >= ENEMY_HIT_MARGIN || dz >= ENEMY_HIT_MARGIN) continue;
-          const enemyTop = e.y + ENEMY_TOP_OFFSET;
+          if (dx >= margin || dz >= margin) continue;
+          const booEnemy = enemy.classList && enemy.classList.contains('boo');
+          const enemyTop = e.y + (booEnemy ? 0.35 : topOffset);
           const playerFoot = pos.y - PLAYER_HALF.y;
-          const stomping = playerFoot >= enemyTop - 0.2 && this.vy <= 0;
+          const stomping = !booEnemy && playerFoot >= enemyTop - 0.2 && this.vy <= 0;
           if (stomping) {
             enemy.parentNode?.removeChild(enemy);
             this.vy = STOMP_BOUNCE;

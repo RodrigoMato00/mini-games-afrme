@@ -21,8 +21,8 @@ export function registerFbxModel() {
   AFRAME.registerComponent('fbx-model', {
     schema: {
       src: { type: 'string' },
-      scale: { type: 'vec3', default: '1 1 1' },
-      rotation: { type: 'vec3', default: '0 0 0' },
+      scale: { type: 'vec3', default: { x: 1, y: 1, z: 1 } },
+      rotation: { type: 'vec3', default: { x: 0, y: 0, z: 0 } },
       resourcePath: { type: 'string', default: '' },
     },
 

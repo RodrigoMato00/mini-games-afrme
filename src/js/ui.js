@@ -212,7 +212,7 @@ export function updateUI() {
       ? ' (R or Space = restart level, Enter = next level)'
       : ' (R or Space to try again)';
     const level = window.__currentLevel || 1;
-    const nextHrefByLevel = level === 1 ? 'nivel2.html' : level === 2 ? 'nivel3.html' : level === 3 ? 'nivel4.html' : level === 4 ? 'nivel5.html' : level === 5 ? 'nivel6.html' : level === 6 ? 'nivel7.html' : null;
+    const nextHrefByLevel = level === 1 ? 'nivel2.html' : level === 2 ? 'nivel3.html' : level === 3 ? 'nivel4.html' : level === 4 ? 'nivel5.html' : level === 5 ? 'nivel6.html' : level === 6 ? 'nivel7.html' : level === 7 ? 'nivel8.html' : level === 8 ? 'nivel9.html' : null;
     msgEl.innerHTML = '';
     const textEl = document.createElement('span');
     textEl.className = 'game-over-text';
@@ -292,6 +292,12 @@ export function initUI(totalCoins) {
   }
   if (inst && window.__currentLevel === 7) {
     inst.textContent = 'WASD move · Space jump · Winter! Collect all 10 coins. Avoid goombas or stomp them!';
+  }
+  if (inst && window.__currentLevel === 8) {
+    inst.textContent = 'WASD move · Space jump · Sky Platforms! No ground — stay on platforms. Stomp enemies by landing on them from above.';
+  }
+  if (inst && window.__currentLevel === 9) {
+    inst.textContent = 'WASD move · Space jump · Maze! Collect all 10 coins. Look at the Boo to freeze it — avoid it or you lose!';
   }
   window.__updateMinimap = updateMinimap;
   updateUI();

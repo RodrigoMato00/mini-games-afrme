@@ -96,7 +96,7 @@ export class Game {
       if (key === 'Enter' && g.won) {
         e.preventDefault();
         const level = window.__currentLevel || 1;
-        const nextHref = level === 1 ? 'nivel2.html' : level === 2 ? 'nivel3.html' : level === 3 ? 'nivel4.html' : level === 4 ? 'nivel5.html' : level === 5 ? 'nivel6.html' : level === 6 ? 'nivel7.html' : 'index.html';
+        const nextHref = level === 1 ? 'nivel2.html' : level === 2 ? 'nivel3.html' : level === 3 ? 'nivel4.html' : level === 4 ? 'nivel5.html' : level === 5 ? 'nivel6.html' : level === 6 ? 'nivel7.html' : level === 7 ? 'nivel8.html' : level === 8 ? 'nivel9.html' : level === 9 ? 'index.html' : 'index.html';
         window.location.href = nextHref;
       }
     };

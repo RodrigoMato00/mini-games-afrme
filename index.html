@@ -5,10 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script>(function(){var h=location.hostname;if(h==='github.io'||h.endsWith('.github.io')){var p=location.pathname.split('/').filter(Boolean);if(p.length>=1){document.write('<base href="'+location.origin+'/'+p[0]+'/">');}})();</script>
   <title>Retro Platform 3D — Start</title>
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://threejs.org;">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://threejs.org;">
   <style>
     html, body { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; font-family: sans-serif; }
     a-scene { display: block; height: 100%; width: 100%; }
@@ -20,8 +17,8 @@
     #start-overlay > * { pointer-events: auto; }
     .start-buttons { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
     .start-btn {
-      font-family: 'Press Start 2P', cursive;
-      font-size: 12px; padding: 16px 24px; cursor: pointer; border: none; border-radius: 8px;
+      font-family: sans-serif;
+      font-size: 14px; padding: 16px 24px; cursor: pointer; border: none; border-radius: 8px;
       font-weight: bold; color: #fff; text-decoration: none; transition: transform 0.15s, box-shadow 0.15s;
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
       text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px 1px 0 #000;
@@ -87,6 +84,8 @@
       <a href="nivel5.html" class="start-btn start-btn-red">Level 5 (Pipe Land)</a>
       <a href="nivel6.html" class="start-btn start-btn-blue">Level 6 (Random Maze)</a>
       <a href="nivel7.html" class="start-btn start-btn-green">Level 7 (Winter)</a>
+      <a href="nivel8.html" class="start-btn start-btn-yellow">Level 8 (Sky Platforms)</a>
+      <a href="nivel9.html" class="start-btn start-btn-red">Level 9 (Boo Maze)</a>
     </div>
   </div>
 </body>

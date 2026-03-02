@@ -1,0 +1,26 @@
+# Boo Super Mario World - colores según referencia (cuerpo blanco, ojos negros, boca y lengua rosa, dientes blancos)
+newmtl body
+Kd 0.98 0.98 0.98
+Ks 0.25 0.25 0.25
+Ns 80
+map_Kd Textures/internal_ground_ao_texture.jpeg
+
+newmtl inside_mouth
+Kd 0.95 0.45 0.55
+Ks 0.15 0.15 0.15
+Ns 40
+
+newmtl dentes
+Kd 1.0 1.0 1.0
+Ks 0.4 0.4 0.4
+Ns 120
+
+newmtl lingua
+Kd 0.98 0.4 0.5
+Ks 0.3 0.3 0.3
+Ns 60
+
+newmtl olhos
+Kd 0.08 0.08 0.08
+Ks 0.1 0.1 0.1
+Ns 30

@@ -7,7 +7,7 @@ export function createPlayer(sceneEl, usePhysics = true) {
   const player = document.createElement('a-entity');
   player.setAttribute('id', 'player');
   player.setAttribute('position', '0 2 -5');
-  player.setAttribute('rotation', '0 90 0');
+  player.setAttribute('rotation', '0 0 0');
 
   const camera = document.createElement('a-entity');
   camera.setAttribute('camera', 'active: true; fov: 75; near: 0.1; far: 1000');
