@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Paso 3 — Plataforma + enemigo + moneda (Workshop Mario)</title>
+  <style>html, body { margin: 0; height: 100%; overflow: hidden; }</style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aframe/1.7.0/aframe.min.js"></script>
+  <script src="../src/js/enemy-movement.js"></script>
+</head>
+<body>
+  <a-scene
+    id="main-scene"
+    background="color: #5C94FC"
+    fog="type: linear; color: #7EB8FA; near: 25; far: 85"
+  >
+    <a-entity id="rig" position="0 1.6 4">
+      <a-entity camera look-controls wasd-controls="acceleration: 15"></a-entity>
+    </a-entity>
+
+    <a-entity light="type: ambient; color: #FFF; intensity: 0.6"></a-entity>
+    <a-entity
+      light="type: directional; color: #FFF; intensity: 1; castShadow: true"
+      position="5 18 8"
+    ></a-entity>
+
+    <a-plane
+      id="ground"
+      position="0 0 0"
+      rotation="-90 0 0"
+      width="30"
+      height="30"
+      color="#3D9B35"
+      shadow="receive: true"
+    ></a-plane>
+
+    <!-- Paso 1: una plataforma -->
+    <a-box
+      id="platform-1"
+      class="platform"
+      position="0 0.5 -5"
+      width="4"
+      height="1"
+      depth="2"
+      color="#C68C53"
+      shadow="cast: true; receive: true"
+    ></a-box>
+
+    <!-- Paso 2: un enemigo -->
+    <a-entity
+      id="enemy-1"
+      class="enemy"
+      position="0 1.2 -5"
+      enemy-movement="range: 1; axis: x; speed: 0.5"
+    >
+      <a-box width="0.6" height="0.6" depth="0.6" color="#5D4037" shadow="cast: true"></a-box>
+    </a-entity>
+
+    <!-- Paso 3: una moneda sobre la plataforma (cilindro dorado que gira) -->
+    <a-entity id="coin-1" position="1.2 1.4 -5" rotation="90 0 0">
+      <a-cylinder
+        radius="0.2"
+        height="0.08"
+        color="#F1C40F"
+        metalness="0.4"
+        roughness="0.3"
+        shadow="cast: true"
+        animation="property: rotation; from: 90 0 0; to: 90 360 0; dur: 1500; loop: true; easing: linear"
+      ></a-cylinder>
+    </a-entity>
+
+    <a-sky color="#87CEEB"></a-sky>
+  </a-scene>
+</body>
+</html>
